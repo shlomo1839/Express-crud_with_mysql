@@ -5,31 +5,32 @@ import { createPool } from 'mysql';
 
 
 const pool = mysql.createPool({
-    host: 'localhost',
+    host: process.env.DB_HOST,
     user: 'root',
-    datbase: 'db'
+    database: 'db'
 })
+
 
 async function setupDatabase() {
     try {
-        `create table if no exsist setupDatabase(
-        table name
-        id (INT AUTO_INCREMENT PRIMARY KEY),
-        title (varchar(200) not null),
-        description (text),
-        status (enum with pending, in_progress, completed),
-        prioroty (enum with low, medum, high),
-        created_at (timestamp defualt current_timestamp),
-        updated_at (timestamp defualt current_timestamp on update current_timestamp)
-    )`
-    console.log("tasks table is ready")
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                title VARCHAR(200) NOT NULL,
+                description TEXT,
+                status ENUM('pending', 'in_progress', 'completed') DEFAULT 'pending',
+                priority ENUM('low', 'medium', 'high') DEFAULT 'medium',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            )
+        `);
+        
+        console.log("Tasks table is ready");
     } catch (error) {
-       console.error('Error creating table:', err.message);
+        console.error(error);
     }
 }
 
+setupDatabase();
 
-
-
-
-// export default connection
+export default pool
