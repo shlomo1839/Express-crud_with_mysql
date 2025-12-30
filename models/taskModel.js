@@ -11,7 +11,7 @@ const Task = {
         return rows[0]
     },
 
-    create: async () => {
+    create: async (data) => {
         const { title, description, status, priority } = data;
         const [result] = await db.query(
             'INSERT INTO tasks (title, description, status, priority) values (?, ?, ?, ?)',
